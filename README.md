@@ -13,4 +13,6 @@ network-device-plugin建议使用ds方式部署到集群中
               fieldPath: status.podIP
 ```
 network-device-plugin通过上面的环境变量可以获得当前使用的网卡，无需通过传参的方式传入网卡信息。
+如图：
 
+![](image/exp.jpg)
