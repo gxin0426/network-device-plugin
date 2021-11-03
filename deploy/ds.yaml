@@ -1,0 +1,51 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  annotations:
+  labels:
+    k8s-app: network-device
+  name: network-device-plugin
+  namespace: network-device
+spec:
+  selector:
+    matchLabels:
+      k8s-app: network-device
+  template:
+    metadata:
+      labels:
+        k8s-app: network-device
+    spec:
+      containers:
+      - env:
+        - name: OS_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - image: gaoxin/test:device_plugin_network_0.60
+          imagePullPolicy: IfNotPresent
+          name: network-device-plugin
+          resource:
+            limits:
+              cpu: 500m
+              memory: 200Mi
+            request:
+              cpu: 200m
+              memory: 100Mi
+          volumeMounts:
+            - mountPath: /var/lib/kubelet
+              name: kubeletdir
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      restartPolicy: Always
+      tolerations:
+        - operator: Exists
+      volumes:
+        - hostPath:
+            path: /var/lib/kubelet
+            type: ""
+          name: kubeletdir
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
